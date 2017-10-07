@@ -20,6 +20,14 @@ public class GestureController : MonoBehaviour
     public bool closed;
     private float closedTime;
 
+    [SerializeField]
+    private LineRenderer m_volumeLineRenderer;
+    [SerializeField]
+    private LineRenderer m_stopLineRenderer;
+
+    [SerializeField]
+    private Transform m_rayStart;
+
     public void AddFinger(Location a_location, GameObject a_finger)
     {
         switch (a_location)
@@ -60,7 +68,25 @@ public class GestureController : MonoBehaviour
 
     private void Update()
     {
-        if(opened)
+        float dot = Vector3.Dot(transform.up, Vector3.up);
+
+        if(dot < -.5f)
+        {
+            m_rayStart.localRotation = Quaternion.Euler(0, 0, - 15f);
+        }
+        else if(dot > .5f)
+        {
+            m_rayStart.localRotation = Quaternion.Euler(0, 0, 15f);
+
+        }
+
+        m_volumeLineRenderer.SetPosition(0, m_rayStart.position);
+        m_volumeLineRenderer.SetPosition(1, m_rayStart.position + -m_rayStart.right * 100);
+
+        m_stopLineRenderer.SetPosition(0, transform.position);
+        m_stopLineRenderer.SetPosition(1, transform.position + transform.up * 100);
+
+        if (opened)
         {
             opened = false;
         }
@@ -109,5 +135,9 @@ public class GestureController : MonoBehaviour
         {
             isClosed = false;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
     }
 }
