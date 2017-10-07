@@ -15,8 +15,10 @@ public class GestureController : MonoBehaviour
 
     public bool isOpen;
     public bool opened;
+    private float openTime;
     public bool isClosed;
     public bool closed;
+    private float closedTime;
 
     public void AddFinger(Location a_location, GameObject a_finger)
     {
@@ -72,21 +74,29 @@ public class GestureController : MonoBehaviour
 
         if(openCount >= 3)
         {
+            openTime = Time.time;
+
             isOpen = true;
 
-            if(isClosed)
+            if(Time.time - closedTime <= 1f)
             {
+                closedTime = 0;
                 opened = true;
+                Debug.Log("We've Opened");
             }
         }
 
         if(closedCount >= 3)
         {
+            closedTime = Time.time;
+
             isClosed = true;
 
-            if(isOpen)
+            if(Time.time - openTime <= 1f)
             {
+                openTime = 0;
                 closed = true;
+                Debug.Log("We've Closed");
             }
         }
 
