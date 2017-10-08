@@ -11,6 +11,9 @@ public class GlobalInfo : MonoBehaviour
     [HideInInspector]
     public bool Started;
 
+    [HideInInspector]
+    public bool CheckStart;
+
     private void Awake()
     {
         m_instance = this;

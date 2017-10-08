@@ -9,6 +9,6 @@ public class StartingTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider a_col)
     {
-        m_startingGesture.HitTrigger(gameObject);
+        //m_startingGesture.HitTrigger(gameObject);
     }
 }

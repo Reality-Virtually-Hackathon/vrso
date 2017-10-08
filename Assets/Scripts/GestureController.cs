@@ -29,6 +29,9 @@ public class GestureController : MonoBehaviour
     private Transform m_rayStart;
 
     private GameObject m_objectHit;
+    public bool HasObject { get { return m_objectHit != null; } }
+    public bool IsPointing { get { return(m_upFingers.Count == 2 || m_upFingers.Count == 1); } }
+
     private AudioSource m_objectSource;
     private Vector3 m_hitStartPos;
     private float m_lastSelectTime;
