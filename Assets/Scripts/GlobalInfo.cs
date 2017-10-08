@@ -133,6 +133,17 @@ public class GlobalInfo : MonoBehaviour
                     SteamVR_LoadLevel.Begin("Area3");
                 }
             }
+            else if (CurrentFrame == FrameNumber.Six)
+            {
+                if (!SteamVR_LoadLevel.loading)
+                {
+                    CheckStart = false;
+                    Started = false;
+                    m_startTimer = false;
+
+                    SteamVR_LoadLevel.Begin("Area4");
+                }
+            }
         }
     }
 }
