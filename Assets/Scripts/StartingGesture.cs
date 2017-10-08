@@ -79,6 +79,11 @@ public class StartingGesture : MonoBehaviour
                         m_other.gameObject.SetActive(false);
                         gameObject.SetActive(false);
                         GlobalInfo.Instance.Started = true;
+
+                        if(GlobalInfo.Instance.CurrentFrame == GlobalInfo.FrameNumber.One)
+                        {
+                            GlobalInfo.Instance.AdvanceFrame();
+                        }
                     }
                     else
                     {

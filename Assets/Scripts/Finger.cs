@@ -23,5 +23,4 @@ public class Finger : MonoBehaviour
             return m_digit;
         }
     }
-
 }

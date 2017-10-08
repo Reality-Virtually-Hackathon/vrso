@@ -72,12 +72,30 @@ public class GestureController : MonoBehaviour
     private bool m_palmDown;
     public bool PalmDown { get { return m_palmDown; } }
 
+    private int m_numChanged = 0;
+
     private void Awake()
     {
         for (int i = 0; i < 4; i++)
         {
             m_upFingers.Add((Finger.Digit)i, false);
             m_downFingers.Add((Finger.Digit)i, false);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if(m_objectHit != null)
+        {
+            iTween objTween = m_objectHit.GetComponent<iTween>();
+            if (objTween != null)
+            {
+                Destroy(objTween);
+            }
+            iTween.ScaleTo(m_objectHit, iTween.Hash("scale", Vector3.one,
+                "time", (1 - m_objectHit.transform.localScale.x) / .4f, "easetype", iTween.EaseType.easeOutSine));
+
+            m_objectHit = null;
         }
     }
 
@@ -150,9 +168,9 @@ public class GestureController : MonoBehaviour
 
         int openCount = 0;
 
-        foreach(KeyValuePair<Finger.Digit, bool> kvp in m_upFingers)
+        foreach (KeyValuePair<Finger.Digit, bool> kvp in m_upFingers)
         {
-            if(kvp.Value)
+            if (kvp.Value)
             {
                 openCount++;
             }
@@ -198,124 +216,64 @@ public class GestureController : MonoBehaviour
             isClosed = false;
         }
 
-        if (Time.time - m_lastSelectTime > 1)
+        if ((int)GlobalInfo.Instance.CurrentFrame >= 3)
         {
-            if (IsPointing)
+            if (Time.time - m_lastSelectTime > 1)
             {
-                if (!m_volumeLineRenderer.enabled)
+                if (IsPointing)
                 {
-                    m_volumeLineRenderer.enabled = true;
-                }
-
-                m_volumeLineRenderer.SetPosition(0, m_rayStart.position);
-                m_volumeLineRenderer.SetPosition(1, m_rayStart.position + m_rayStart.right * 100 * (isLeft ? 1 : 1));
-
-                Ray selectRay = new Ray(m_rayStart.position, m_rayStart.right * (isLeft ? 1 : 1));
-                RaycastHit selectHit;
-
-                if (Physics.Raycast(selectRay, out selectHit, 1000))
-                {
-                    if (selectHit.collider.gameObject.tag == "Sections")
+                    if (!m_volumeLineRenderer.enabled)
                     {
-                        if (m_volumeLineRenderer.enabled)
-                        {
-                            m_volumeLineRenderer.enabled = false;
-                        }
+                        m_volumeLineRenderer.enabled = true;
+                    }
 
-                        if (m_objectHit != null)
+                    m_volumeLineRenderer.SetPosition(0, m_rayStart.position);
+                    m_volumeLineRenderer.SetPosition(1, m_rayStart.position + m_rayStart.right * 100 * (isLeft ? 1 : 1));
+
+                    Ray selectRay = new Ray(m_rayStart.position, m_rayStart.right * (isLeft ? 1 : 1));
+                    RaycastHit selectHit;
+
+                    if (Physics.Raycast(selectRay, out selectHit, 1000))
+                    {
+                        if (selectHit.collider.gameObject.tag == "Sections" && m_objectHit != selectHit.collider.gameObject)
                         {
-                            iTween objTween = m_objectHit.GetComponent<iTween>();
-                            if (objTween != null)
+                            if (m_volumeLineRenderer.enabled)
                             {
-                                Destroy(objTween);
+                                m_volumeLineRenderer.enabled = false;
                             }
-                            iTween.ScaleTo(m_objectHit, iTween.Hash("scale", Vector3.one,
-                                "time", (1 - m_objectHit.transform.localScale.x) / .4f, "easetype", iTween.EaseType.easeOutSine));
+
+                            if (m_objectHit != null)
+                            {
+                                iTween objTween = m_objectHit.GetComponent<iTween>();
+                                if (objTween != null)
+                                {
+                                    Destroy(objTween);
+                                }
+                                iTween.ScaleTo(m_objectHit, iTween.Hash("scale", Vector3.one,
+                                    "time", (1 - m_objectHit.transform.localScale.x) / .4f, "easetype", iTween.EaseType.easeOutSine));
+                            }
+
+                            m_lastSelectTime = Time.time;
+                            m_objectHit = selectHit.collider.gameObject;
+                            m_objectSource = m_objectHit.GetComponent<AudioSource>();
+                            m_hitStartPos = Vector3.zero;
+
+                            iTween.ScaleTo(m_objectHit, iTween.Hash("scale", Vector3.one * .8f,
+                                "time", .5f, "looptype", iTween.LoopType.pingPong, "easeType", iTween.EaseType.easeInOutSine));
                         }
-
-                        m_lastSelectTime = Time.time;
-                        m_objectHit = selectHit.collider.gameObject;
-                        m_objectSource = m_objectHit.GetComponent<AudioSource>();
-                        m_hitStartPos = Vector3.zero;
-
-                        iTween.ScaleTo(m_objectHit, iTween.Hash("scale", Vector3.one * .8f,
-                            "time", .5f, "looptype", iTween.LoopType.pingPong, "easeType", iTween.EaseType.easeInOutSine));
                     }
-                }
-            }
-            else
-            {
-                if (m_volumeLineRenderer.enabled)
-                {
-                    m_volumeLineRenderer.enabled = false;
-                }
-            }
-        }
-
-        if (Time.time - m_lastSelectTime >= 4 && m_objectHit != null)
-        {
-            iTween objTween = m_objectHit.GetComponent<iTween>();
-            if (objTween != null)
-            {
-                Destroy(objTween);
-            }
-            iTween.ScaleTo(m_objectHit, iTween.Hash("scale", Vector3.one,
-                "time", (1 - m_objectHit.transform.localScale.x) / .4f, "easetype", iTween.EaseType.easeOutSine));
-
-            m_objectHit = null;
-        }
-
-        if (m_objectHit != null)
-        {
-            if (m_hitStartPos == Vector3.zero && isOpen)
-            {
-                m_hitStartPos = transform.position;
-            }
-            else if (m_palmUp && isOpen)
-            {
-                if (transform.position.y < m_hitStartPos.y)
-                {
-                    m_hitStartPos = transform.position;
                 }
                 else
                 {
-                    float change = (transform.position.y - m_hitStartPos.y) / 10f;
-
-                    if (change > 0 && !m_objectSource.isPlaying)
+                    if (m_volumeLineRenderer.enabled)
                     {
-                        m_objectSource.UnPause();
+                        m_volumeLineRenderer.enabled = false;
                     }
-
-                    float nextVolume = Mathf.Clamp01(m_objectSource.volume + change);
-
-                    m_objectSource.volume = nextVolume;
-                }
-            }
-            else if (m_palmDown && isOpen)
-            {
-                if (transform.position.y > m_hitStartPos.y)
-                {
-                    m_hitStartPos = transform.position;
-                }
-                else
-                {
-                    float change = (transform.position.y - m_hitStartPos.y) / 10f;
-
-                    if (change > 0 && !m_objectSource.isPlaying)
-                    {
-                        m_objectSource.UnPause();
-                    }
-
-                    float nextVolume = Mathf.Clamp01(m_objectSource.volume + change);
-
-                    m_objectSource.volume = nextVolume;
                 }
             }
 
-            if (closed)
+            if (Time.time - m_lastSelectTime >= 4 && m_objectHit != null)
             {
-                m_objectSource.volume = 0;
-
                 iTween objTween = m_objectHit.GetComponent<iTween>();
                 if (objTween != null)
                 {
@@ -325,6 +283,84 @@ public class GestureController : MonoBehaviour
                     "time", (1 - m_objectHit.transform.localScale.x) / .4f, "easetype", iTween.EaseType.easeOutSine));
 
                 m_objectHit = null;
+            }
+
+            if (m_objectHit != null)
+            {
+                if (m_hitStartPos == Vector3.zero && isOpen)
+                {
+                    m_hitStartPos = transform.position;
+                }
+                else if (m_palmUp && isOpen)
+                {
+                    if (transform.position.y < m_hitStartPos.y)
+                    {
+                        m_hitStartPos = transform.position;
+                    }
+                    else
+                    {
+                        float change = (transform.position.y - m_hitStartPos.y) / 10f;
+
+                        if (change > 0 && !m_objectSource.isPlaying)
+                        {
+                            m_objectSource.UnPause();
+                        }
+
+                        float nextVolume = Mathf.Clamp01(m_objectSource.volume + change);
+
+                        m_objectSource.volume = nextVolume;
+
+                        if(GlobalInfo.Instance.CurrentFrame == GlobalInfo.FrameNumber.Four)
+                        {
+                            GlobalInfo.Instance.AdvanceFrame(GlobalInfo.FrameFour.Up);
+                        }
+                    }
+                }
+                else if (m_palmDown && isOpen)
+                {
+                    if (transform.position.y > m_hitStartPos.y)
+                    {
+                        m_hitStartPos = transform.position;
+                    }
+                    else
+                    {
+                        float change = (transform.position.y - m_hitStartPos.y) / 10f;
+
+                        if (change > 0 && !m_objectSource.isPlaying)
+                        {
+                            m_objectSource.UnPause();
+                        }
+
+                        float nextVolume = Mathf.Clamp01(m_objectSource.volume + change);
+
+                        m_objectSource.volume = nextVolume;
+
+                        if (GlobalInfo.Instance.CurrentFrame == GlobalInfo.FrameNumber.Four)
+                        {
+                            GlobalInfo.Instance.AdvanceFrame(GlobalInfo.FrameFour.Down);
+                        }
+                    }
+                }
+
+                if (closed)
+                {
+                    m_objectSource.volume = 0;
+
+                    iTween objTween = m_objectHit.GetComponent<iTween>();
+                    if (objTween != null)
+                    {
+                        Destroy(objTween);
+                    }
+                    iTween.ScaleTo(m_objectHit, iTween.Hash("scale", Vector3.one,
+                        "time", (1 - m_objectHit.transform.localScale.x) / .4f, "easetype", iTween.EaseType.easeOutSine));
+
+                    m_objectHit = null;
+
+                    if (GlobalInfo.Instance.CurrentFrame == GlobalInfo.FrameNumber.Four)
+                    {
+                        GlobalInfo.Instance.AdvanceFrame(GlobalInfo.FrameFour.Stop);
+                    }
+                }
             }
         }
     }

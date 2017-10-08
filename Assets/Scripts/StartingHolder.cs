@@ -44,6 +44,8 @@ public class StartingHolder : MonoBehaviour
     private Text m_leftHandText;
     [SerializeField]
     private Text m_rightHandText;
+    [SerializeField]
+    private Text m_frameText;
 
     [SerializeField]
     private AudioSource[] m_instruments;
@@ -55,6 +57,9 @@ public class StartingHolder : MonoBehaviour
 
     private bool m_movingDown;
     private bool m_movingUp;
+
+    private bool m_goneUp;
+    private bool m_goneDown;
 
     private void Update()
     {
@@ -79,6 +84,8 @@ public class StartingHolder : MonoBehaviour
         rightText += "\nPalmDown: " + m_rightGesture.PalmDown;
 
         m_rightHandText.text = rightText;
+
+        m_frameText.text = GlobalInfo.Instance.CurrentFrame.ToString();
 
         if(!m_started && GlobalInfo.Instance.Started)
         {
@@ -122,85 +129,114 @@ public class StartingHolder : MonoBehaviour
 
         if (GlobalInfo.Instance.Started)
         {
-            if (!m_leftGesture.HasObject && !m_rightGesture.HasObject && m_leftGesture.isClosed && m_rightGesture.isClosed)
+            if ((int)GlobalInfo.Instance.CurrentFrame >= (int)GlobalInfo.FrameNumber.Two)
             {
-                foreach (AudioSource i in m_instruments)
+                if (!m_leftGesture.HasObject && !m_rightGesture.HasObject && m_leftGesture.isClosed && m_rightGesture.isClosed)
                 {
-                    i.volume = 0;
+                    foreach (AudioSource i in m_instruments)
+                    {
+                        i.volume = 0;
+                    }
+
+                    if(GlobalInfo.Instance.CurrentFrame == GlobalInfo.FrameNumber.Two)
+                    {
+                        GlobalInfo.Instance.AdvanceFrame();
+                    }
                 }
             }
 
-            if (!m_leftGesture.HasObject && !m_rightGesture.HasObject && m_leftGesture.isOpen && m_rightGesture.isOpen)
+            if ((int)GlobalInfo.Instance.CurrentFrame >= (int)GlobalInfo.FrameNumber.Three)
             {
-                if (m_volumeStartPos == Vector3.zero)
+                if (!m_leftGesture.HasObject && !m_rightGesture.HasObject && m_leftGesture.isOpen && m_rightGesture.isOpen)
                 {
-                    m_volumeStartPos = (m_leftGesture.transform.position + m_rightGesture.transform.position) / 2f;
-                }
-
-                Vector3 nextPos = (m_leftGesture.transform.position + m_rightGesture.transform.position) / 2f;
-
-                if (m_leftGesture.PalmUp && m_rightGesture.PalmUp)
-                {
-                    if (nextPos.y < m_volumeStartPos.y)
+                    if (m_volumeStartPos == Vector3.zero)
                     {
-                        m_volumeStartPos = nextPos;
+                        m_volumeStartPos = (m_leftGesture.transform.position + m_rightGesture.transform.position) / 2f;
                     }
-                    else if(nextPos.y < m_volumeLastPos.y)
+
+                    Vector3 nextPos = (m_leftGesture.transform.position + m_rightGesture.transform.position) / 2f;
+
+                    if (m_leftGesture.PalmUp && m_rightGesture.PalmUp)
                     {
-                        m_movingDown = true;
-                    }
-                    else
-                    {
-                        if(m_movingDown)
+                        if (nextPos.y < m_volumeStartPos.y)
                         {
                             m_volumeStartPos = nextPos;
-                            m_movingDown = false;
                         }
-
-                        float change = (nextPos.y - m_volumeStartPos.y) / 10f;
-
-                        foreach (AudioSource i in m_instruments)
+                        else if (nextPos.y < m_volumeLastPos.y)
                         {
-                            float nextVolume = Mathf.Clamp01(i.volume + change);
+                            m_movingDown = true;
+                        }
+                        else
+                        {
+                            if (m_movingDown)
+                            {
+                                m_volumeStartPos = nextPos;
+                                m_movingDown = false;
+                            }
 
-                            i.volume = nextVolume;
+                            float change = (nextPos.y - m_volumeStartPos.y) / 10f;
+
+                            foreach (AudioSource i in m_instruments)
+                            {
+                                float nextVolume = Mathf.Clamp01(i.volume + change);
+
+                                i.volume = nextVolume;
+                            }
+
+                            if(!m_goneUp)
+                            {
+                                m_goneUp = true;
+                            }
                         }
                     }
-                }
-                else if (m_leftGesture.PalmDown && m_rightGesture.PalmDown)
-                {
-                    if (nextPos.y > m_volumeStartPos.y)
+                    else if (m_leftGesture.PalmDown && m_rightGesture.PalmDown)
                     {
-                        m_volumeStartPos = nextPos;
-                    }
-                    else if (nextPos.y > m_volumeLastPos.y)
-                    {
-                        m_movingUp = true;
-                    }
-                    else
-                    {
-                        if(m_movingUp)
+                        if (nextPos.y > m_volumeStartPos.y)
                         {
                             m_volumeStartPos = nextPos;
-                            m_movingUp = false;
                         }
-
-                        float change = (nextPos.y - m_volumeStartPos.y) / 10f;
-
-                        foreach (AudioSource i in m_instruments)
+                        else if (nextPos.y > m_volumeLastPos.y)
                         {
-                            float nextVolume = Mathf.Clamp01(i.volume + change);
+                            m_movingUp = true;
+                        }
+                        else
+                        {
+                            if (m_movingUp)
+                            {
+                                m_volumeStartPos = nextPos;
+                                m_movingUp = false;
+                            }
 
-                            i.volume = nextVolume;
+                            float change = (nextPos.y - m_volumeStartPos.y) / 10f;
+
+                            foreach (AudioSource i in m_instruments)
+                            {
+                                float nextVolume = Mathf.Clamp01(i.volume + change);
+
+                                i.volume = nextVolume;
+                            }
+
+                            if(!m_goneDown)
+                            {
+                                m_goneDown = true;
+                            }
                         }
                     }
+
+                    m_volumeLastPos = nextPos;
+                }
+                else if (m_volumeStartPos != Vector3.zero)
+                {
+                    m_volumeStartPos = Vector3.zero;
                 }
 
-                m_volumeLastPos = nextPos;
-            }
-            else if (m_volumeStartPos != Vector3.zero)
-            {
-                m_volumeStartPos = Vector3.zero;
+                if(GlobalInfo.Instance.CurrentFrame == GlobalInfo.FrameNumber.Three)
+                {
+                    if(m_goneUp && m_goneDown)
+                    {
+                        GlobalInfo.Instance.AdvanceFrame();
+                    }
+                }
             }
         }
     }

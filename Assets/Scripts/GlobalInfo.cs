@@ -8,13 +8,37 @@ public class GlobalInfo : MonoBehaviour
 
     public static GlobalInfo Instance { get { return m_instance; } }
 
+    public enum FrameNumber
+    {
+        One,
+        Two,
+        Three,
+        Four,
+        Five,
+        Six
+    }
+    public FrameNumber CurrentFrame { get { return (FrameNumber)m_currentFrame; } }
+
+    public enum FrameFour
+    {
+        Up,
+        Down,
+        Stop
+    }
+
+    private List<FrameFour> m_fourCheck = new List<FrameFour>();
+
     [HideInInspector]
     public bool Started;
 
     [HideInInspector]
     public bool CheckStart;
 
-    private int currentFrame = 0;
+    private int m_currentFrame = 0;
+
+    private float m_currentTime;
+
+    private int m_numChanged;
 
     private void Awake()
     {
@@ -23,12 +47,62 @@ public class GlobalInfo : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void LoadNextLevel()
+    private void Update()
     {
-        if(!SteamVR_LoadLevel.loading)
+        if(m_currentFrame == 4)
         {
-            currentFrame++;
-            SteamVR_LoadLevel.Begin("Frame" + currentFrame);
+            m_currentTime -= Time.deltaTime;
+
+            if(m_currentTime <= 0)
+            {
+                AdvanceFrame();
+            }
+        }
+    }
+
+    public void AdvanceFrame(FrameFour a_Value = FrameFour.Up)
+    {
+        bool changed = false;
+
+        if (CurrentFrame == FrameNumber.Four)
+        {
+            if(!m_fourCheck.Contains(a_Value))
+            {
+                m_fourCheck.Add(a_Value);
+
+                if(m_fourCheck.Count == 3)
+                {
+                    m_currentFrame++;
+                    changed = true;
+                }
+            }
+        }
+        else
+        {
+            m_currentFrame++;
+            changed = true;
+        }
+
+        if (changed)
+        {
+            if (m_currentFrame == 4)
+            {
+                if (!SteamVR_LoadLevel.loading)
+                {
+                    SteamVR_LoadLevel.Begin("Area2");
+
+                    m_currentTime = 75;
+                }
+            }
+            else if (m_currentFrame == 5)
+            {
+                if (!SteamVR_LoadLevel.loading)
+                {
+                    SteamVR_LoadLevel.Begin("Area3");
+
+                    m_currentTime = 75;
+                }
+            }
         }
     }
 }
