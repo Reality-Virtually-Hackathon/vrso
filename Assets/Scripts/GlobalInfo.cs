@@ -86,7 +86,7 @@ public class GlobalInfo : MonoBehaviour
 
         if (prevStarted != Started && Started && CurrentFrame == FrameNumber.Six && !m_startTimer)
         {
-            m_currentTime = 27f;
+            m_currentTime = 25f;
             m_startTimer = true;
         }
 
