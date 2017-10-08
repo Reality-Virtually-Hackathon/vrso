@@ -13,44 +13,84 @@ public class StartingGesture : MonoBehaviour
     [SerializeField]
     private AudioSource[] m_instruments;
 
-    private int lastHit = -1;
+    [SerializeField]
+    private Capture m_capture;
+    public Capture Capture { get { return m_capture; } }
 
-    public void HitTrigger(GameObject a_hitObject)
+    private List<Vector3> m_tracked = new List<Vector3>();
+
+    private int lastHit = -1;
+    private bool init = false;
+
+    private void Update()
     {
-        for(int i = 0; i < m_handPoints.Length; i++)
+        if (GlobalInfo.Instance.CheckStart)
         {
-            if(a_hitObject == m_handPoints[i])
+            if(!init)
             {
-                if(i == (lastHit + 1))
+                m_tracked.Clear();
+                init = true;
+            }
+
+            if (m_tracked.Count == 0)
+            {
+                m_tracked.Add(transform.position);
+            }
+            else
+            {
+                Vector3 pos = transform.position;
+                Vector3 check = m_tracked[m_tracked.Count - 1];
+                pos.z = check.z = 0;
+                if ((pos - check).sqrMagnitude > .001f)
                 {
-                    lastHit = i;
-                    m_handPoints[i].SetActive(false);
+                    m_tracked.Add(transform.position);
                 }
-                else if(i != lastHit)
+
+                if (m_tracked.Count == m_capture.Tracked.Count)
                 {
-                    lastHit = -1;
-                    foreach(GameObject hp in m_handPoints)
+                    for (int i = 0; i < m_tracked.Count; i++)
                     {
-                        hp.SetActive(true);
+                        Vector3 val = m_tracked[i];
+                        val.z = 0.45f;
+
+                        m_tracked[i] = val;
                     }
 
-                    break;
+                    float dif = 0;
+                    for (int i = 0; i < m_tracked.Count; i++)
+                    {
+                        dif += Vector3.Distance(m_capture.Tracked[i], m_tracked[i]);
+                    }
+
+                    if (dif / 50f < 1)
+                    {
+                        foreach (AudioSource i in m_instruments)
+                        {
+                            i.volume = .4f;
+
+                            if (!i.isPlaying)
+                            {
+                                i.Play();
+                            }
+                        }
+
+                        m_capture.gameObject.SetActive(false);
+                        m_other.Capture.gameObject.SetActive(false);
+                        m_other.gameObject.SetActive(false);
+                        gameObject.SetActive(false);
+                        GlobalInfo.Instance.Started = true;
+                    }
+                    else
+                    {
+                        m_handPoints[0].SetActive(true);
+                    }
                 }
             }
         }
+    }
 
-        if(lastHit == m_handPoints.Length - 1)
-        {
-            foreach (AudioSource i in m_instruments)
-            {
-                if (!i.isPlaying)
-                {
-                    i.Play();
-                }
-            }
-        }
-
-        m_other.enabled = false;
-        this.enabled = false;
+    private void OnDisable()
+    {
+        init = false;
     }
 }

@@ -7,13 +7,8 @@ public class StartingTrigger : MonoBehaviour
     [SerializeField]
     private StartingGesture m_startingGesture;
 
-    private void Awake()
-    {
-        m_startingGesture = GetComponentInParent<StartingGesture>();
-    }
-
     private void OnTriggerEnter(Collider a_col)
     {
-
+        //m_startingGesture.HitTrigger(gameObject);
     }
 }
