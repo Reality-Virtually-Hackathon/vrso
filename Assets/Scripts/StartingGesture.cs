@@ -15,6 +15,9 @@ public class StartingGesture : MonoBehaviour
 
     [SerializeField]
     private Capture m_capture;
+    public Capture Capture { get { return m_capture; } }
+    [SerializeField]
+    private GameObject m_startHolder;
 
     private List<Vector3> m_tracked = new List<Vector3>();
     private bool m_started;
@@ -28,11 +31,15 @@ public class StartingGesture : MonoBehaviour
             if (m_tracked.Count == 0)
             {
                 m_tracked.Add(transform.position);
-                m_handPoints[0].transform.position = m_capture.Tracked[m_tracked.Count];
+                m_startHolder.SetActive(false);
+                //m_handPoints[0].transform.position = m_capture.Tracked[m_tracked.Count];
             }
             else
             {
-                if ((transform.position - m_tracked[m_tracked.Count - 1]).sqrMagnitude > .001f)
+                Vector3 pos = transform.position;
+                Vector3 check = m_tracked[m_tracked.Count - 1];
+                pos.z = check.z = 0;
+                if ((pos - check).sqrMagnitude > .001f)
                 {
                     m_tracked.Add(transform.position);
                 }
@@ -63,18 +70,22 @@ public class StartingGesture : MonoBehaviour
                             }
                         }
 
+                        m_capture.gameObject.SetActive(false);
+                        m_other.Capture.gameObject.SetActive(false);
                         m_other.gameObject.SetActive(false);
                         gameObject.SetActive(false);
                         m_started = false;
+                        GlobalInfo.Instance.Started = true;
                     }
                     else
                     {
                         m_handPoints[0].SetActive(true);
+                        m_startHolder.SetActive(true);
                     }
                 }
                 else
                 {
-                    m_handPoints[0].transform.position = m_capture.Tracked[m_tracked.Count];
+                    //m_handPoints[0].transform.position = m_capture.Tracked[m_tracked.Count];
                 }
             }
         }
