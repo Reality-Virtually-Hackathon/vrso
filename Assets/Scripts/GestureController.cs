@@ -10,8 +10,8 @@ public class GestureController : MonoBehaviour
         Down
     }
 
-    private List<GameObject> m_upFingers = new List<GameObject>();
-    private List<GameObject> m_downFingers = new List<GameObject>();
+    private Dictionary<Finger.Digit, bool> m_upFingers = new Dictionary<Finger.Digit, bool>();
+    private Dictionary<Finger.Digit, bool> m_downFingers = new Dictionary<Finger.Digit, bool>();
 
     public bool isOpen;
     public bool opened;
@@ -30,7 +30,35 @@ public class GestureController : MonoBehaviour
 
     private GameObject m_objectHit;
     public bool HasObject { get { return m_objectHit != null; } }
-    public bool IsPointing { get { return (m_upFingers.Count == 1); } }
+    public bool IsPointing
+    {
+        get
+        {
+            if (m_upFingers.ContainsKey(Finger.Digit.Pointer))
+            {
+                bool pointing = false;
+
+                if(m_upFingers[Finger.Digit.Pointer])
+                {
+                    pointing = true;
+                }
+
+                if(pointing)
+                {
+                    if(m_upFingers[Finger.Digit.Middle] || m_upFingers[Finger.Digit.Ring] || m_upFingers[Finger.Digit.Pinky])
+                    {
+                        pointing = false;
+                    }
+                }
+
+                return pointing;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
 
     private AudioSource m_objectSource;
     private Vector3 m_hitStartPos;
@@ -44,21 +72,24 @@ public class GestureController : MonoBehaviour
     private bool m_palmDown;
     public bool PalmDown { get { return m_palmDown; } }
 
+    private void Awake()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            m_upFingers.Add((Finger.Digit)i, false);
+            m_downFingers.Add((Finger.Digit)i, false);
+        }
+    }
+
     public void AddFinger(Location a_location, GameObject a_finger)
     {
         switch (a_location)
         {
             case Location.Up:
-                if (!m_upFingers.Contains(a_finger))
-                {
-                    m_upFingers.Add(a_finger);
-                }
+                m_upFingers[a_finger.GetComponent<Finger>().MyDigit] = true;
                 break;
             case Location.Down:
-                if (!m_downFingers.Contains(a_finger))
-                {
-                    m_downFingers.Add(a_finger);
-                }
+                m_downFingers[a_finger.GetComponent<Finger>().MyDigit] = true;
                 break;
         }
     }
@@ -68,16 +99,10 @@ public class GestureController : MonoBehaviour
         switch (a_location)
         {
             case Location.Up:
-                if (m_upFingers.Contains(a_finger))
-                {
-                    m_upFingers.Remove(a_finger);
-                }
+                m_upFingers[a_finger.GetComponent<Finger>().MyDigit] = false;
                 break;
             case Location.Down:
-                if (m_downFingers.Contains(a_finger))
-                {
-                    m_downFingers.Remove(a_finger);
-                }
+                m_downFingers[a_finger.GetComponent<Finger>().MyDigit] = false;
                 break;
         }
     }
@@ -123,10 +148,27 @@ public class GestureController : MonoBehaviour
             closed = false;
         }
 
-        int openCount = m_upFingers.Count;
-        int closedCount = m_downFingers.Count;
+        int openCount = 0;
 
-        if (openCount >= 4)
+        foreach(KeyValuePair<Finger.Digit, bool> kvp in m_upFingers)
+        {
+            if(kvp.Value)
+            {
+                openCount++;
+            }
+        }
+
+        int closedCount = 0;
+
+        foreach (KeyValuePair<Finger.Digit, bool> kvp in m_downFingers)
+        {
+            if (kvp.Value)
+            {
+                closedCount++;
+            }
+        }
+
+        if (openCount >= 3)
         {
             if (!isOpen)
             {
@@ -151,14 +193,14 @@ public class GestureController : MonoBehaviour
             isOpen = false;
         }
 
-        if (closedCount < 3)
+        if (closedCount < 4)
         {
             isClosed = false;
         }
 
         if (Time.time - m_lastSelectTime > 1)
         {
-            if (openCount == 1)
+            if (IsPointing)
             {
                 if (!m_volumeLineRenderer.enabled)
                 {
