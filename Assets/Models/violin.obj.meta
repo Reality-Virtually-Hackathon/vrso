@@ -1,12 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
 guid: 6fc04b26f26c7234eb50d0f360530e3d
-timeCreated: 1507475264
-=======
-guid: ce1d478981a202344b00f2a3a34831ea
-timeCreated: 1507470854
->>>>>>> aea1d4836e8e7502da14a76a15961122e56f4b2a
-licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
@@ -17,6 +10,7 @@ ModelImporter:
     2300000: default
     3300000: default
     4300000: default
+    9500000: //RootNode
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -94,7 +88,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
