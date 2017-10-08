@@ -34,33 +34,59 @@ public class GlobalInfo : MonoBehaviour
     [HideInInspector]
     public bool CheckStart;
 
+    private bool prevStarted;
+
     private int m_currentFrame = 0;
 
     private float m_currentTime;
+    private bool m_startTimer;
 
     private int m_numChanged;
 
+    private bool fading = false;
+
     private void Awake()
     {
-        m_instance = this;
+        if (m_instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            m_instance = this;
 
-        DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
+        }
     }
 
     private void Update()
     {
-        if(m_currentFrame == 4)
+        if(m_startTimer)
         {
             m_currentTime -= Time.deltaTime;
 
             if(m_currentTime <= 0)
             {
-                AdvanceFrame();
+                AdvanceFrame(FrameFour.Up, true);
             }
         }
+
+        if(prevStarted != Started && Started && CurrentFrame == FrameNumber.Four && !m_startTimer)
+        {
+            m_currentTime = 32f;
+            m_startTimer = true; 
+        }
+
+        if (prevStarted != Started && Started && CurrentFrame == FrameNumber.Five && !m_startTimer)
+        {
+            m_currentTime = 30f;
+            m_startTimer = true;
+        }
+
+        prevStarted = Started;
     }
 
-    public void AdvanceFrame(FrameFour a_Value = FrameFour.Up)
+    public void AdvanceFrame(FrameFour a_Value = FrameFour.Up, bool a_force = false)
     {
         bool changed = false;
 
@@ -69,12 +95,12 @@ public class GlobalInfo : MonoBehaviour
             if(!m_fourCheck.Contains(a_Value))
             {
                 m_fourCheck.Add(a_Value);
+            }
 
-                if(m_fourCheck.Count == 3)
-                {
-                    m_currentFrame++;
-                    changed = true;
-                }
+            if (a_force && m_fourCheck.Count == 3)
+            {
+                m_currentFrame++;
+                changed = true;
             }
         }
         else
@@ -85,22 +111,26 @@ public class GlobalInfo : MonoBehaviour
 
         if (changed)
         {
-            if (m_currentFrame == 4)
+            if(CurrentFrame == FrameNumber.Four)
             {
                 if (!SteamVR_LoadLevel.loading)
                 {
-                    SteamVR_LoadLevel.Begin("Area2");
+                    CheckStart = false;
+                    Started = false;
+                    m_startTimer = false;
 
-                    m_currentTime = 75;
+                    SteamVR_LoadLevel.Begin("Area2");
                 }
             }
-            else if (m_currentFrame == 5)
+            else if (CurrentFrame == FrameNumber.Five)
             {
                 if (!SteamVR_LoadLevel.loading)
                 {
-                    SteamVR_LoadLevel.Begin("Area3");
+                    CheckStart = false;
+                    Started = false;
+                    m_startTimer = false;
 
-                    m_currentTime = 75;
+                    SteamVR_LoadLevel.Begin("Area3");
                 }
             }
         }
