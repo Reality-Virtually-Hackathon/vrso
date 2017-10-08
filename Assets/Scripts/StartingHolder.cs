@@ -174,7 +174,7 @@ public class StartingHolder : MonoBehaviour
                                 m_movingDown = false;
                             }
 
-                            float change = (nextPos.y - m_volumeStartPos.y) / 10f;
+                            float change = (nextPos.y - m_volumeStartPos.y) / 50f;
 
                             foreach (AudioSource i in m_instruments)
                             {
@@ -207,7 +207,7 @@ public class StartingHolder : MonoBehaviour
                                 m_movingUp = false;
                             }
 
-                            float change = (nextPos.y - m_volumeStartPos.y) / 10f;
+                            float change = (nextPos.y - m_volumeStartPos.y) / 50f;
 
                             foreach (AudioSource i in m_instruments)
                             {
