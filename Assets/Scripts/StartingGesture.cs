@@ -16,22 +16,25 @@ public class StartingGesture : MonoBehaviour
     [SerializeField]
     private Capture m_capture;
     public Capture Capture { get { return m_capture; } }
-    [SerializeField]
-    private GameObject m_startHolder;
 
     private List<Vector3> m_tracked = new List<Vector3>();
-    private bool m_started;
 
     private int lastHit = -1;
+    private bool init = false;
 
     private void Update()
     {
         if (GlobalInfo.Instance.CheckStart)
         {
+            if(!init)
+            {
+                m_tracked.Clear();
+                init = true;
+            }
+
             if (m_tracked.Count == 0)
             {
                 m_tracked.Add(transform.position);
-                m_startHolder.SetActive(false);
             }
             else
             {
@@ -75,16 +78,19 @@ public class StartingGesture : MonoBehaviour
                         m_other.Capture.gameObject.SetActive(false);
                         m_other.gameObject.SetActive(false);
                         gameObject.SetActive(false);
-                        m_started = false;
                         GlobalInfo.Instance.Started = true;
                     }
                     else
                     {
                         m_handPoints[0].SetActive(true);
-                        m_startHolder.SetActive(true);
                     }
                 }
             }
         }
+    }
+
+    private void OnDisable()
+    {
+        init = false;
     }
 }

@@ -14,8 +14,21 @@ public class GlobalInfo : MonoBehaviour
     [HideInInspector]
     public bool CheckStart;
 
+    private int currentFrame = 0;
+
     private void Awake()
     {
         m_instance = this;
+
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void LoadNextLevel()
+    {
+        if(!SteamVR_LoadLevel.loading)
+        {
+            currentFrame++;
+            SteamVR_LoadLevel.Begin("Frame" + currentFrame);
+        }
     }
 }
