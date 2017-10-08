@@ -61,8 +61,47 @@ public class StartingHolder : MonoBehaviour
     private bool m_goneUp;
     private bool m_goneDown;
 
+    private void Start()
+    {
+        if(GlobalInfo.Instance.CurrentFrame == GlobalInfo.FrameNumber.Seven)
+        {
+            foreach(AudioSource i in m_instruments)
+            {
+                Vector3 pos = i.transform.position;
+                pos += Vector3.up * Random.Range(.25f, .5f);
+                iTween.MoveTo(i.gameObject, iTween.Hash("position", pos,
+    "time", Random.Range(.5f,1f), "looptype", iTween.LoopType.pingPong, "easeType", iTween.EaseType.easeInOutSine));
+            }
+        }
+    }
+
     private void Update()
     {
+        switch (GlobalInfo.Instance.CurrentFrame)
+        {
+            case GlobalInfo.FrameNumber.One:
+                m_debugText.text = "Touch you fingers and follow tutorial to start all instruments";
+                break;
+            case GlobalInfo.FrameNumber.Two:
+                m_debugText.text = "Close both hands to stop all instruments";
+                break;
+            case GlobalInfo.FrameNumber.Three:
+                m_debugText.text = "Raise both hands palm up to raise all volumes.\nLower both hands palm down to lower all volumes";
+                break;
+            case GlobalInfo.FrameNumber.Four:
+                m_debugText.text = "Start the orchestra.\nPoint at an object and hold to select it. Raise palm to turn volume up. Lower palm to turn volume down. Close hand to turn off.";
+                break;
+            case GlobalInfo.FrameNumber.Five:
+                m_debugText.text = "Start the orchestra, and test out the instruments!";
+                break;
+            case GlobalInfo.FrameNumber.Six:
+                m_debugText.text = "Start the orchestra, and condunct your first concert.";
+                break;
+            case GlobalInfo.FrameNumber.Seven:
+                m_debugText.text = "Congrats on your first orchestra!";
+                break;
+        }
+
         string leftText = "";
 
         leftText += "IsOpen: " + m_leftGesture.isOpen;
@@ -125,7 +164,9 @@ public class StartingHolder : MonoBehaviour
             }
         }
 
-        m_debugText.text = dText;
+        //m_debugText.text = dText;
+
+
 
         if (GlobalInfo.Instance.Started)
         {
