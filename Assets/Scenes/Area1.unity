@@ -112,6 +112,39 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!21 &173131937
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Sprites/Default
+  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - PixelSnap: 0
+    - _EnableExternalAlpha: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &286015438
 Prefab:
   m_ObjectHideFlags: 0
@@ -170,12 +203,12 @@ Prefab:
         type: 2}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 375452790}
+      objectReference: {fileID: 173131937}
     - target: {fileID: 33188254322273494, guid: e566eae1406a3264cb6c45b3abbd24b7,
         type: 2}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 1420814370}
+      objectReference: {fileID: 1758590503}
     - target: {fileID: 4087999759916376, guid: e566eae1406a3264cb6c45b3abbd24b7, type: 2}
       propertyPath: m_LocalRotation.x
       value: 0.99997807
@@ -260,39 +293,6 @@ AudioSource:
   m_PrefabParentObject: {fileID: 82454766081731374, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
     type: 2}
   m_PrefabInternal: {fileID: 1393542654}
---- !u!21 &375452790
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: Sprites/Default
-  m_Shader: {fileID: 10753, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _AlphaTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - PixelSnap: 0
-    - _EnableExternalAlpha: 0
-    m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Flip: {r: 1, g: 1, b: 1, a: 1}
-    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!82 &840180341 stripped
 AudioSource:
   m_PrefabParentObject: {fileID: 82652776716295140, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
@@ -383,10 +383,75 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1523617292916922, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459866889172442, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1145044426751702, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1894391810489918, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720676903920144, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1537855026216216, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1114311246837294, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1790346096833404, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1331511725803248, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1644355820480492, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82393029602489554, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
+        type: 2}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: b7cbb50336640ff4893c1652cdbb1346, type: 3}
+    - target: {fileID: 82652776716295140, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
+        type: 2}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 69a7c710a8e1d1148a4825305e34edfc, type: 3}
+    - target: {fileID: 82058119950054032, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
+        type: 2}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 8562a7fa22a84e1458fc233be226962c, type: 3}
+    - target: {fileID: 82454766081731374, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
+        type: 2}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 26cef72f9420fc7469afc03883a22957, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 34b056be9f8aceb4e91f0f4dba6c637a, type: 2}
   m_IsPrefabParent: 0
---- !u!43 &1420814370
+--- !u!82 &1730983462 stripped
+AudioSource:
+  m_PrefabParentObject: {fileID: 82393029602489554, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
+    type: 2}
+  m_PrefabInternal: {fileID: 1393542654}
+--- !u!43 &1758590503
 Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -514,11 +579,6 @@ Mesh:
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshOptimized: 0
---- !u!82 &1730983462 stripped
-AudioSource:
-  m_PrefabParentObject: {fileID: 82393029602489554, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
-    type: 2}
-  m_PrefabInternal: {fileID: 1393542654}
 --- !u!82 &1815913950 stripped
 AudioSource:
   m_PrefabParentObject: {fileID: 82058119950054032, guid: 34b056be9f8aceb4e91f0f4dba6c637a,
